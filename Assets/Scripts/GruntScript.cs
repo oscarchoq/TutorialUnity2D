@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GruntScript : MonoBehaviour
 {
+    public AudioClip HurtSound;
+
     public GameObject BulletPrefab;
     public GameObject John;
 
@@ -43,6 +45,7 @@ public class GruntScript : MonoBehaviour
     public void Hit()
     {
         Health = Health - 1;
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(HurtSound);
         if (Health == 0) { Destroy(gameObject); }
     }
 }

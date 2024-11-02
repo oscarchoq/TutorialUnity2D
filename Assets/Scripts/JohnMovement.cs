@@ -1,9 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class JohnMovement : MonoBehaviour
 {
+
+    public AudioClip JumpSound;
+    public AudioClip HurtSound;
+    public AudioClip DieSound;
+
     public GameObject BulletPrefab;
     public float Speed;
     public float JumpForce;
@@ -42,13 +49,15 @@ public class JohnMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) && Grounded)
         {
             Jump();
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(JumpSound);
         }
 
         if (Input.GetKey(KeyCode.Space) && Time.time > LastShoot + DelayShoot){
             Shoot();
             LastShoot = Time.time;
         }
-      
+
+        verifyPositionJohn();
     }
 
     private void Jump()
@@ -74,6 +83,26 @@ public class JohnMovement : MonoBehaviour
     public void Hit()
     {
         Health = Health - 1;
-        if (Health == 0) { Destroy(gameObject);  }
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(HurtSound);
+        if (Health == 0) { 
+            Camera.main.GetComponent<AudioSource>().Stop();
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(DieSound);
+            Destroy(gameObject);  
+        }
+    }
+
+    private void verifyPositionJohn()
+    {
+        // posicion incial -3.368
+        // Muerte en -3.749
+        float posicionY = transform.position.y;
+        
+        if (posicionY <= -3.749f) {
+            Debug.Log("Muerto por caida");
+            Health = 0;
+            Camera.main.GetComponent<AudioSource>().Stop();
+            Camera.main.GetComponent<AudioSource>().PlayOneShot(DieSound);
+            Destroy(gameObject);
+        }
     }
 }
